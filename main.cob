@@ -19,6 +19,7 @@
                ACCEPT UserInput
                MOVE UserInput TO I
                MOVE 1 TO BoardValue(I)
+               CALL 'COMPUTERMOVE' USING BoardTable
         END-PERFORM
 
     STOP RUN.
