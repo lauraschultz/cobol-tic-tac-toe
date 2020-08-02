@@ -5,15 +5,21 @@ DATA DIVISION.
 WORKING-STORAGE SECTION.
        01 CVal PIC 9.
            88 IsZero VALUE 0.
-       01 Idx PIC 9.
+
 LINKAGE SECTION.
        01 BoardTable.
            02 BoardValue PIC 9 OCCURS 9 TIMES INDEXED BY I.
 
 PROCEDURE DIVISION USING BoardTable.
-       PERFORM WITH TEST AFTER VARYING I FROM 1 BY 1 UNTIL IsZero
+    *>    --- FIND FIRST AVAILABLE SPOT: ---
+    *>    PERFORM WITH TEST AFTER VARYING I FROM 1 BY 1 UNTIL IsZero
+    *>        MOVE BoardValue(I) TO CVal
+    *>    END-PERFORM
+
+    *>    --- FIND RANDOM POSITION, CHECK IF SPOT AVAILABLE: ---
+       PERFORM WITH TEST AFTER UNTIL IsZero
+           COMPUTE I = FUNCTION RANDOM() * 9 + 1
            MOVE BoardValue(I) TO CVal
        END-PERFORM
-
-       MOVE 2 TO BoardValue(I).
-    *>    EXIT PROGRAM.
+       
+       MOVE 2 TO BoardValue(I).        
