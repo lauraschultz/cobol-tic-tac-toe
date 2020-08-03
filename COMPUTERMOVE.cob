@@ -5,6 +5,7 @@ DATA DIVISION.
 WORKING-STORAGE SECTION.
        01 CVal PIC 9.
            88 IsZero VALUE 0.
+       01 WS-TIME PIC 9(8).
 
 LINKAGE SECTION.
        01 BoardTable.
@@ -17,8 +18,10 @@ PROCEDURE DIVISION USING BoardTable.
     *>    END-PERFORM
 
     *>    --- FIND RANDOM POSITION, CHECK IF SPOT AVAILABLE: ---
+       ACCEPT WS-TIME FROM TIME
+       COMPUTE I = FUNCTION RANDOM(WS-TIME)
        PERFORM WITH TEST AFTER UNTIL IsZero
-           COMPUTE I = FUNCTION RANDOM() * 9 + 1
+           COMPUTE I = FUNCTION RANDOM * 9 + 1
            MOVE BoardValue(I) TO CVal
        END-PERFORM
        
