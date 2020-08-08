@@ -38,7 +38,6 @@ PROCEDURE DIVISION USING BoardTable, Depth, NodeValue, CPlayer, Pos.
            END-IF
         *>    DISPLAY "BASE CASE, NODEVAL IS " NodeValue 
            GOBACK.
-        *>    to get the value of node, find min/max of all children
                 COMPUTE NewDepth = Depth + 1
                    IF CPlayer=1 THEN
                        MOVE -2 TO MinMax
