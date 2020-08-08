@@ -3,13 +3,15 @@ IDENTIFICATION DIVISION.
 PROGRAM-ID. GETNODE RECURSIVE.
 ENVIRONMENT DIVISION.
 DATA DIVISION.
-WORKING-STORAGE SECTION.
-       01 Winner PIC 9 VALUE 0.
-           88 IsWinner VALUE 1 OR 2.
-       01 MaxDepth PIC 9 VALUE 2.
-       01 CurrentMax PIC S9 VALUE -2.
+LOCAL-STORAGE SECTION.
+       01 MinMax PIC 9.
        01 CNodeVal PIC 9.
        01 NewDepth PIC 9.
+       01 NP PIC 9.
+       01 Winner PIC 9 VALUE 0.
+           88 IsWinner VALUE 1 OR 2.
+       01 MaxDepth PIC 9 VALUE 3.
+       01 NCPlayer PIC 9.
 
 LINKAGE SECTION.
        01 BoardTable.
@@ -20,10 +22,11 @@ LINKAGE SECTION.
        01 Pos PIC 9.
 
 PROCEDURE DIVISION USING BoardTable, Depth, NodeValue, CPlayer, Pos.
-       DISPLAY "STARTING FN, DEPTH IS " Depth " CPLAYER IS " CPlayer
+       DISPLAY "STARTING FN: " BoardTable
+    *>    DISPLAY "BOARD IS " BoardTable
        CALL 'COMPUTEWINNER' USING BoardTable, Winner
-       IF IsWinner OR Depth = MaxDepth *> base cases
-           DISPLAY "depth is " Depth
+       IF IsWinner OR Depth = MaxDepth THEN *> base cases
+        *>    DISPLAY "depth is " Depth
            IF Winner = 2
                MOVE 1 TO NodeValue
            END-IF
@@ -33,27 +36,36 @@ PROCEDURE DIVISION USING BoardTable, Depth, NodeValue, CPlayer, Pos.
            IF NOT IsWinner
                MOVE 0 TO NodeValue
            END-IF
-           GOBACK
-       ELSE
-    *>    DISPLAY "HERE"
-           PERFORM WITH TEST AFTER VARYING I FROM 1 BY 1 UNTIL I>9
-               DISPLAY "Starting loop, I is " I
-               IF BoardValue(I) = 0 *> space is empty
-                   DISPLAY "EMPTY SPACE, I IS " I
-                   MOVE CPlayer TO BoardValue(I)
-                   COMPUTE NewDepth = Depth + 1
-                   *>    switches CPlayer 1 <=> 2
-                   COMPUTE CPlayer = FUNCTION MOD(CPlayer 2) + 1
-                   CALL 'GETNODE' USING
-                       BoardTable, NewDepth, CNodeVal, CPlayer, I
-                   IF CNodeVal > CurrentMax
-                       MOVE CNodeVal TO CurrentMax
-                       MOVE I TO Pos
-                       DISPLAY "found new max node: " CNodeVal
+        *>    DISPLAY "BASE CASE, NODEVAL IS " NodeValue 
+           GOBACK.
+        *>    to get the value of node, find min/max of all children
+                COMPUTE NewDepth = Depth + 1
+                   IF CPlayer=1 THEN
+                       MOVE -2 TO MinMax
+                   ELSE 
+                       MOVE 2 TO MinMax
                    END-IF
-                   MOVE 0 TO BoardValue(I)
-               END-IF   
+                  *>    switches CPlayer 1 <=> 2
+           COMPUTE NCPlayer = FUNCTION MOD(CPlayer 2) + 1
+
+           PERFORM WITH TEST BEFORE VARYING I FROM 1 BY 1 UNTIL I>9
+            *>    DISPLAY "Starting loop, I is " I " depth is " Depth
+               IF BoardValue(I) = 0 *> space is empty
+                   MOVE CPlayer TO BoardValue(I)
+                *>    DISPLAY "the board is " BoardTable
+                   CALL 'GETNODE' USING
+                       BoardTable, NewDepth, CNodeVal, NCPlayer, NP
+                   IF (CPlayer=1 AND CNodeVal > MinMax) OR
+                       (CPlayer=2 AND CNodeVal < MinMax) THEN
+                       MOVE CNodeVal TO MinMax
+                       MOVE I TO Pos 
+                    *>    DISPLAY "found new minmax: " MinMax ", " I
+                   END-IF
+                *>    DISPLAY "I is " I " boardvalue is " BoardValue(I)
+                   MOVE ZERO TO BoardValue(I)
+                *>    DISPLAY "the board is " BoardTable
+               END-IF  
            END-PERFORM
-           MOVE CurrentMax TO NodeValue
-           DISPLAY "HERE"
-       END-IF.
+           MOVE MinMax TO NodeValue
+           DISPLAY "NODE DONE: " BoardTable " VALUE: " NodeValue
+           GOBACK.
