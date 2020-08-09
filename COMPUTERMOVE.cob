@@ -30,8 +30,9 @@ PROCEDURE DIVISION USING BoardTable.
     *>    END-PERFORM
 
     *>     --- USE RECURSIVE LOOK AHEAD ALG: ---
-           CALL 'GETNODE' USING
-               BoardTable, Depth, NodeValue, CPlayer, Pos.
-           DISPLAY "FINISHED, POS IS " Pos
+        *>    CALL 'GETNODE' USING
+        *>        BoardTable, Depth, NodeValue, CPlayer, Pos.
+
+        CALL 'ITERGETNODE' USING BoardTable, Pos.
            
        MOVE 2 TO BoardValue(Pos).        
