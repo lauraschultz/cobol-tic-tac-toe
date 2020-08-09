@@ -35,4 +35,3 @@ PROCEDURE DIVISION USING BoardTable, Winner.
        IF BoardValue(3) = BoardValue(5) AND BoardValue(5) = BoardValue(7)
            MOVE BoardValue(3) TO Winner
        END-IF.
-

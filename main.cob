@@ -41,7 +41,7 @@
                    DISPLAY "Congrats, you won!"
                 END-IF
                 IF Winner = 2
-                    DISPLAY "You lost, better luck next time!"
+                    DISPLAY "You lost :("
                 END-IF
                 STOP RUN
            END-IF.
