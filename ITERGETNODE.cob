@@ -2,9 +2,12 @@
 IDENTIFICATION DIVISION.
 PROGRAM-ID. ITERGETNODE.
 DATA DIVISION.
+WORKING-STORAGE SECTION.
+       01 Winner PIC 9 VALUE 0.
+           88 IsWinner VALUE 1 OR 2.
 LOCAL-STORAGE SECTION.
        01 Stack.
-           02 StackE OCCURS 400 TIMES INDEXED BY StackP.
+           02 StackE OCCURS 600 TIMES INDEXED BY StackP.
                03 BoardTableE.
                    04 BoardValueE PIC 9 OCCURS 9 TIMES INDEXED BY J.
                03 NodeVal PIC S9.
@@ -15,8 +18,6 @@ LOCAL-STORAGE SECTION.
                03 Visited PIC 9 VALUE 0.
                    88 NotVisited VALUE 0.
        01 MaxDepth PIC 9 VALUE 2.
-       01 Winner PIC 9 VALUE 0.
-           88 IsWinner VALUE 1 OR 2.
        01 ChDepth PIC 9.
        01 ParentRef PIC 99.
 
@@ -32,6 +33,7 @@ PROCEDURE DIVISION USING BoardTable, FPos.
        MOVE -2 TO NodeVal(StackP)
        PERFORM WITH TEST AFTER UNTIL StackP = 1
            CALL 'COMPUTEWINNER' USING BoardTableE(StackP), Winner
+           DISPLAY "compute winner with " BoardTableE(StackP)": " Winner
            MOVE ParentP(StackP) TO ParentRef
            IF IsWinner OR Depth(StackP) = MaxDepth *> base cases
                PERFORM UpdateSelf
@@ -58,7 +60,9 @@ PROCEDURE DIVISION USING BoardTable, FPos.
            END-IF
            IF NOT IsWinner
                MOVE 0 TO NodeVal(StackP)
-           END-IF.
+           END-IF
+           DISPLAY "COMPUTED " BoardTableE(StackP) 
+           " to " NodeVal(StackP).
 
        UpdateParent. 
             IF (FUNCTION MOD(Depth(ParentRef) 2) = 0 AND
@@ -69,6 +73,8 @@ PROCEDURE DIVISION USING BoardTable, FPos.
                 MOVE NodeVal(StackP) TO NodeVal(ParentRef)
                 MOVE Pos(StackP) TO ChildPos(ParentRef)
                 COMPUTE Visited(ParentRef) = 1
+                DISPLAY "CHANGED " BoardTableE(ParentRef) 
+           " to " NodeVal(ParentRef)
              END-IF.
              
        AddChildren.
@@ -86,6 +92,8 @@ PROCEDURE DIVISION USING BoardTable, FPos.
                        MOVE 2 TO NodeVal(StackP)
                        MOVE 2 TO BoardValueE(StackP, J)
                    END-IF
+       DISPLAY "COMPUTED " BoardTableE(StackP) 
+           " to " NodeVal(StackP)
                    MOVE ChDepth TO Depth(StackP)
                    MOVE ParentRef TO ParentP(StackP)
                    MOVE J TO Pos(StackP)

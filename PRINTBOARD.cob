@@ -34,7 +34,7 @@ PROCEDURE DIVISION USING BoardTable.
            END-IF
            IF Temp = 0 AND I<9
                DISPLAY " "
-               DISPLAY "----------------"
+               DISPLAY "-----------------"
            END-IF.
         *>    DISPLAY "END OF PRINTBOX".
        
